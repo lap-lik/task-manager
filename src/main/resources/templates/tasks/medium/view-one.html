@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout}"
+      lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>Просмотр задачи</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="col">
+        <h4 >
+            <a th:text="'Задача: ' + ${task.getTaskTitle()}"></a>
+        </h4>
+        <h6 >
+            <a th:if="${!task.isCompleted()}" class="btn btn-sm btn-outline-danger"
+               th:href="'/tasks/closed/medium/' + ${task.getId()}"
+               onclick="return confirm('Вы действительно хотите закрыть проект?');">Закрыть</a>
+            <a th:if="${task.isCompleted()}" class="btn btn-sm btn-outline-warning"
+               th:href="'/tasks/disclosure/medium/' + ${task.getId()}">Переоткрыть</a>
+            <a style="width: 110px" class="btn btn-sm btn-outline-success"
+               th:href="'/tasks/update/' + ${task.getId()}">Редактировать</a>
+        </h6>
+    </div>
+    <!--ЗАДАЧИ-->
+    <div sec:authorize="isAuthenticated() ">
+        <h5><a style="vertical-align: middle; font-size: 15pt" th:href="'/tasks/medium/'+${task.getId()}"
+               class="btn btn-outline">Заметки</a>
+            <a style="vertical-align: middle; font-size: 15pt">/</a>
+            <a style="vertical-align: middle; font-size: 15pt" th:href="'/tasks/small-at-medium/' +${task.getId()}"
+               class="btn btn-outline">Закрытые</a>
+            <a style="vertical-align: middle; font-size: 15pt">/</a>
+            <!-- КНОПКА-ТРИГЕР МОДАЛЬНОГО ОКНА -->
+            <a style="vertical-align: middle; font-size: 15pt" class="btn btn-outline" data-bs-toggle="modal"
+               data-bs-target="#exampleModal-addTask">Добавить заметку</a>
+            <!--    КНОПКА-ТРИГЕР МОДАЛЬНОГО ОКНА  ДОБАВИТЬ СОТРУДНИКА К ПРОЕКТУ-->
+            <a class="btn btn-success" role="button" style="float: right"
+               data-bs-toggle="modal" data-bs-target="#exampleModal-addUserToTask" aria-disabled="true">ДОБАВИТЬ сотрудника</a>
+        </h5>
+        <!--        ТАБЛИЦА ЗАМЕТОК-->
+        <div style="overflow: auto; height: max-content; padding-inline-end: 20px">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col" hidden="">ID</th>
+                    <th scope="col" hidden="">Текст</th>
+                    <th scope="col" hidden="">Дата создания</th>
+                    <th scope="col" hidden="">Дата завершения</th>
+                    <th scope="col" hidden="">Статус</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="smallTask : ${taskByTasks}" th:if="${!smallTask.isCompleted()}">
+                    <td th:text="${smallTask.getId()}"></td>
+                    <td th:text="${smallTask.getTaskTitle()}"></td>
+                    <td th:text="${'от ' + smallTask.getCreatedWhen()}"></td>
+                    <td style="clear: both; width: 130px" th:text="${'до: ' + task.getFixPeriod()}"></td>
+                    <td style="width: 110px">
+                        <div>
+                            <a th:if="${!smallTask.isCompleted()}" class="btn btn-sm btn-outline-success"
+                               th:href="'/tasks/closed/small/' + ${smallTask.getId()}"
+                               onclick="return confirm('Вы действительно хотите закрыть заметку?');">Завершить</a>
+                            <a th:if="${task.isCompleted()}" class="btn btn-sm btn-outline-warning"
+                               th:href="'/tasks/disclosure/small/' + ${smallTask.getId()}">Возобновить</a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <!--ЛЕНТА КОММЕНТАРИЕВ-->
+        <div style="overflow: auto; max-height: 600px; padding-inline-end: 100px " >
+            <div class="container mt-3">
+                <div class="d-flex justify-content-center row" th:each="comment : ${taskComments}">
+                    <div class="col-md-8" id="col" th:id="${'col'+comment.getId()}">
+                        <div class="d-flex flex-column comment-section" id="comment-section"
+                             th:id="${'comment-section'+comment.getId()}">
+                            <div class="bg-body p-2" >
+                                <div class="d-flex flex-row user-info" id="user-info"
+                                     th:id="${'user-info'+comment.getId()}">
+                                    <link rel="icon" type="image/ico" th:href="@{../static/favicon.ico}" >
+<!--                                    НОРМАЛЬНАЯ АВАТАРКА-->
+                                    <div class="d-flex justify-content-center row" th:each="user : ${usersDTO}">
+                                        <div th:switch="${user.getOnlineCopyPath() !=null}" >
+                                            <img th:case="true" class="rounded-circle" width="50"
+                                                 th:src="@{|/files/files/${user.getOnlineCopyPath()
+                                                                     .substring(user.getOnlineCopyPath().lastIndexOf('\\')+38)}|} "
+                                                 alt="1" >
+                                            <img th:case="false" class="rounded-circle" width="50"
+                                                 src="https://krasivosti.pro/uploads/posts/2023-01/1674549597_krasivosti-pro-p-koshki-aktivnie-vkontakte-22.jpg"
+                                                 alt="1">
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-column justify-content-start ml-2">
+                                    <span class="d-block font-weight-bold name"
+                                          th:text="${comment.getCreatedBy()}"></span>
+                                        <span class="date text-black-50"
+                                              th:text="${ 'От '+  comment.getCreatedWhen()}"></span>
+                                    </div>
+                                </div>
+                                <div class="mt-2" id="user-text" th:id="${'user-text'+comment.getId()}">
+                                    <p class="comment-text" th:text="${ comment.getText()}"></p>
+                                    <a class="text-link text-blue" th:if="${comment.getOnlineCopyPath()} != null"
+                                       th:href="@{|/comments/download?commentId=${comment.getId()}|}"
+                                       th:text="${comment.getOnlineCopyPath().substring(comment.getOnlineCopyPath().lastIndexOf('\\')+38)}">
+                                    </a>
+                                    <hr>
+                                </div>
+                                <div class="mt-2">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--    МОДАЛЬНОЕ ОКНО НОВОГО КОММЕНТАРИЯ    -->
+        <div>
+            <div sec:authorize="isAuthenticated()">
+                <h5><a style="vertical-align: middle">Комментарии:</a>
+                    <!-- Кнопка-триггер модального окна -->
+                    <span type="button" class="bi bi-plus" data-bs-toggle="modal"
+                          data-bs-target="#exampleModal-newComment"
+                          style="vertical-align: -5px; font-size: 20pt; -webkit-text-stroke-width: 0.2pt; color: #acb4bc">+</span>
+                </h5>
+
+                <!--    СПИСОК СОТРУДНИКОВ ФИРМЫ-->
+                <div class="mt-5">
+                    <div class="row">
+                        <div class="col">
+                            <h4>Сотрудники</h4>
+                            <!-- Таблица сотрудников-->
+                            <table class="table table-hover mt-3">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Имя</th>
+                                    <th scope="col">Фамилия</th>
+                                    <th scope="col">Отчество</th>
+                                    <th scope="col">Почта</th>
+                                    <th scope="col">Телефон</th>
+                                    <th scope="col"></th>
+                                    <th scope="col"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="usersByTask : ${usersByTaskId}">
+                                    <td th:text="${usersByTask.getFirstName()}"></td>
+                                    <td th:text="${usersByTask.getLastName()}"></td>
+                                    <td th:text="${usersByTask.getMiddleName()}"></td>
+                                    <td th:text="${usersByTask.getEmail()}"></td>
+                                    <td th:text="${usersByTask.getMobilePhone()}"></td>
+                                    <td style="width: 210px">
+                                        <div>
+                                            <a th:if="${task.getResponsible() != usersByTask.getId()}" class="btn btn-sm btn-outline-success"
+                                               th:href="'/tasks/responsible/add/medium/' + ${task.getId()} + '/' + ${usersByTask.getId()}" >Назначить ответственным</a>
+                                            <a th:if="${task.getResponsible() == usersByTask.getId()}" class="btn btn-sm btn-outline-warning"
+                                               th:href="'/tasks/responsible/remove/medium/' + ${task.getId()}">Снять ответственного</a>
+                                        </div>
+                                    </td>
+                                    <td style="width: 150px">
+                                        <div th:if="${usersByTask.getId() == userDTO.getId()}">
+                                            <a class="btn btn-sm btn-outline-danger"
+                                               th:href="'/tasks/remove-user/big/' + ${task.getId()}"
+                                               onclick="return confirm('Вы действительно хотите выйти из проекта?');">Выйти
+                                                из проекта</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- МОДАЛЬНОЕ ОКНО НОВОЙ ЗАДАЧИ-->
+                <div class="modal fade" id="exampleModal-addTask" tabindex="-1" aria-labelledby="exampleModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel-addTask">Новая заметка</h1>
+                            </div>
+                            <div class="modal-body">
+                                <form style="max-width: 25vw" method="POST" th:action="@{/tasks/add/of-medium}"
+                                      th:object="${taskForm}">
+                                    <div class="mb-3">
+                                        <label for="taskTitle-addTask" class="form-label">Название</label>
+                                        <input name="taskTitle" type="text" class="form-control"
+                                               id="taskTitle-addTask">
+                                    </div>
+                                    <div class="form-floating">
+                                        <input name="fixPeriod" type="date" class="form-control" id="fixPeriod"
+                                               placeholder="Введите дату завершения" required>
+                                        <label for="fixPeriod">Дата завершения</label>
+                                    </div>
+                                    <div class="mb-3" hidden>
+                                        <label for="pattern"></label>
+                                        <input class="form-select" hidden name="pattern" id="pattern"
+                                               th:each="pattern : ${T(com.sber.finalsberproject.model.Pattern)}"
+                                               th:value="${'SMALL_TASKS'}">
+                                        <input type="hidden" name="taskId" th:value="${task.getId()}">
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            Закрыть
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- МОДАЛЬНОЕ ОКНО НОВОЙ КОММЕНТАРИЙ-->
+                <div class="modal fade" id="exampleModal-newComment" tabindex="-1" aria-labelledby="exampleModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel-newComment">Новый проект</h1>
+                            </div>
+                            <div class="modal-body">
+                                <form enctype="multipart/form-data" class="needs-validation" novalidate
+                                      style="max-width: 50vw" method="POST"
+                                      th:action="@{/comments/add-by-medium}"
+                                      th:object="${commentForm}">
+                                    <div class="mb-3">
+                                        <label for="text" class="form-label">Текст</label>
+                                        <input name="text" type="text" class="form-control"
+                                               id="text">
+                                    </div>
+                                    <div class="mt-3 form-floating">
+                                        <input name="onlineCopy" type="file"
+                                               class="form-control form-control-sm"
+                                               id="onlineCopyPath"
+                                               placeholder="Онлайн копия файла" style="padding-top: 2rem;">
+                                        <label for="onlineCopyPath">Онлайн копия</label>
+                                    </div>
+                                    <input type="hidden" name="taskId" th:value="${task.getId()}">
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            Закрыть
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">Сохранить изменения
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--    МОДАЛЬНОЕ ОКНО  ДОБАВИТЬ СОТРУДНИКА К ЗАДАЧЕ-->
+        <div class="modal fade" id="exampleModal-addUserToTask" tabindex="-1" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel-addUserToTask">Сотрудники:</h1>
+                    </div>
+                    <div class="modal-body">
+                        <form style="max-width: 25vw" method="POST" th:action="@{/tasks/medium/add_user}"
+                              th:object="${taskAddUserForm}">
+                            <input type="hidden" name="taskId" th:value="${task.getId()}">
+                            <div class="mt-3 row g-2">
+                                <div class="col-md">
+                                    <div class="form-floating">
+                                        <select class="form-select" name="userId" id="userId-addUserToTask" required>
+                                            <option selected th:value="${null}">Выберете сотрудника</option>
+                                            <option
+                                                    th:each="userdto : ${usersDTO}"
+                                                    th:value="${userdto.getId()}"
+                                                    th:text="${userdto.getLastName() + ' ' + userdto.getFirstName() + ' ' + userdto.getMiddleName()}">
+                                            </option>
+                                        </select>
+                                        <label for="userId-addUserToTask">Пользователь</label>
+                                        <div class="invalid-feedback">Обязательное поле для заполнения</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Закрыть
+                                </button>
+                                <button type="submit" class="btn btn-primary">Добавить</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+

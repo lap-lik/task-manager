@@ -1,0 +1,41 @@
+<div xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+     th:fragment="footer" data-bs-theme="dark">
+  <!-- Footer -->
+  <footer class="text-center text-white" style="background-color: #0a4275;">
+    <!-- Grid container -->
+    <div class="container p-4 pb-0">
+      <!-- Section: CTA -->
+      <section class="">
+        <li sec:authorize="isAuthenticated()" class="nav-link">
+          <a class="nav-link active" aria-current="page" href="/users/list">Пользователи</a>
+        </li>
+
+        <form class="d-flex" sec:authorize="isAnonymous()">
+          <p class="d-flex justify-content-center align-items-center">
+            <span class="me-3">Регистрируйся прямо сейчас</span>
+            <a href="/users/registration"  class="btn btn-outline-light btn-rounded">Регистрация!</a>
+          </p>
+        </form>
+        <form class="d-flex" sec:authorize="isAuthenticated()">
+          <p class="d-flex justify-content-center align-items-center">
+            <span class="me-3">Пожалуй пойду...</span>
+            <a href="/users/registration"  class="btn btn-outline-light btn-rounded">Покинуть библиотеку!</a>
+          </p>
+        </form>
+
+
+      </section>
+      <!-- Section: CTA -->
+    </div>
+    <!-- Grid container -->
+
+    <!-- Copyright -->
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+      © 2023 Copyright:
+      <a class="text-white" href="https://mdbootstrap.com/">Java 16</a>
+    </div>
+    <!-- Copyright -->
+  </footer>
+  <!-- Footer -->
+</div>

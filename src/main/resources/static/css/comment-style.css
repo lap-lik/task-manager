@@ -1,0 +1,16 @@
+tr {
+    width: 100%;
+    display: inline-table;
+    height:60px;
+    table-layout: fixed;
+}
+table{
+    height:100%;
+    display: -moz-inline-block;
+}
+tbody{
+    overflow-y: scroll;
+    height: 400px;
+    width: 85%;
+    position: fixed;
+}

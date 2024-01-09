@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Заметки</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <!--ЗАМЕТКИ-->
+    <div sec:authorize="isAuthenticated() ">
+        <div class="col">
+            <h5><a style="vertical-align: middle; font-size: 15pt" th:href="@{/tasks/small/view-all/open}"
+                   class="btn btn-outline">Заметки</a>
+                <a style="vertical-align: middle; font-size: 15pt">/</a>
+                <a style="vertical-align: middle; font-size: 15pt" th:href="@{/tasks/small/view-all/closed}"
+                   class="btn btn-outline">Закрытые</a>
+                <a style="vertical-align: middle; font-size: 15pt">/</a>
+                <!-- КНОПКА-ТРИГЕР МОДАЛЬНОГО ОКНА -->
+                <a style="vertical-align: middle; font-size: 15pt" class="btn btn-outline" data-bs-toggle="modal"
+                   data-bs-target="#exampleModal3">Добавить заметку</a>
+            </h5>
+        </div>
+<!--        ТАБЛИЦА ЗАМЕТОК-->
+        <div style="overflow: auto; height: max-content; padding-inline-end: 20px">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col" hidden="">ID</th>
+                    <th scope="col" hidden="">Текст</th>
+                    <th scope="col" hidden="">Дата создания</th>
+                    <th scope="col" hidden="">Дата завершения</th>
+                    <th scope="col" hidden="">Статус</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="task : ${smallTasks}" th:if="${!task.isCompleted()}">
+                    <td th:text="${task.getId()}"></td>
+                    <td th:text="${task.getTaskTitle()}"></td>
+                    <td th:text=" ${'от ' + task.getCreatedWhen()}"></td>
+                    <td style="clear: both; width: 130px" th:text="${'до: ' + task.getFixPeriod()}"></td>
+                    <td style="width: 110px">
+                        <div>
+                            <a th:if="${!task.isCompleted()}" class="btn btn-sm btn-outline-success"
+                               th:href="'/tasks/closed/small/' + ${task.getId()}"
+                               onclick="return confirm('Вы действительно хотите закрыть проект?');">Завершить</a>
+                            <a th:if="${task.isCompleted()}" class="btn btn-sm btn-outline-warning"
+                               th:href="'/tasks/disclosure/small/' + ${task.getId()}">Возобновить</a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--МОДАЛЬНОЕ ОКНО-->
+        <div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel3">Новая заметка</h1>
+                    </div>
+                    <div class="modal-body">
+                        <form style="max-width: 25vw" method="POST" th:action="@{/tasks/add/small}" th:object="${taskForm}">
+                            <div class="mb-3">
+                                <label for="taskTitle3" class="form-label">Название</label>
+                                <input name="taskTitle" type="text" class="form-control"
+                                       id="taskTitle3">
+                                <div class="mb-3" hidden>
+                                    <input class="form-select" name="pattern" id="pattern"
+                                           th:each="pattern : ${T(com.sber.finalsberproject.model.Pattern)}"
+                                           th:value="${'SMALL_TASKS'}">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Закрыть
+                                </button>
+                                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

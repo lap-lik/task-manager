@@ -1,0 +1,174 @@
+<div xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+     data-bs-theme="dark">
+
+  <html>
+
+  <!--    <script type="text/javascript" src="/js/nav.js"></script>-->
+  <!--<link rel="stylesheet" media="screen" href="/css/nav.css">-->
+  <style>
+    body {
+      width: 100%;
+      min-height: 100vh;
+      background-color: #f5f6fb;
+    }
+    /* Основные свойства для бокового меню */
+    .menu {
+      display: flex;
+      flex-direction: column; /* размещаем элементы к колонку */
+      width: 240px;
+      min-height: 100vh; /* на всю высоту экрана */
+      position: fixed; /* чтобы меню было фиксированным */
+      top: 0; /* прижимаем к верхнему */
+      left: 0; /* .. и нижнему краю */
+      background-color: #343951;
+      box-shadow: 4px 4px 8px 0 rgba(34, 60, 80, 0.2); /* задаем тень, чтобы отделить от фона */
+    }
+    /* Свойства для контента */
+    .content {
+      padding-left: 280px; /* отступ от бокового меню 240px + 40px */
+      padding-top: 40px;
+      padding-right: 40px;
+      padding-bottom: 40px;
+    }
+    .logo {
+      display: flex;
+      align-items: center; /* центрируем логотип с текстом */
+      color: #fff;
+      font-size: 24px;
+      text-decoration: none;
+      font-family: "Rubik", sans-serif;
+      font-weight: bold;
+    }
+    /* Задаем псеводоэлемент для иконки */
+    .logo:before {
+      content: url(./img/logo.svg); /* путь от иконки-лого */
+      padding-right: 8px; /* немного отступим справа */
+    }
+    /* Позиционирование лого в меню */
+    .menu__logo {
+      padding-top: 50px;
+      padding-left: 30px;
+      margin-bottom: 59px;
+    }
+    /* Позиционирование элементов в меню */
+    .menu__link,
+    .admin__link {
+      padding-left: 30px;
+    }
+    /* Свойства для элементов меню */
+    .link {
+      position: relative; /* чтобы задать потом псевдоэлемент */
+      display: flex; /* чтобы элемент тянулся на всю ширину */
+      align-items: center; /* по центру текст и иконка */
+      height: 45px; /* высота элемента 45px */
+      text-decoration: none;
+    }
+    /* Свойства иконки внутри ссылки */
+    .link > img {
+      width: 25px;
+      margin-right: 20px;
+    }
+    /* Свойства текста внутри ссылки */
+    .link > span {
+      font-family: "Karla", sans-serif;
+      font-size: 20px;
+      color: #fff;
+    }
+    /* При наведении на ссылку - полупрозрачный белый фон */
+    .link:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    /* Выводим оранжевую линию слева */
+    .link:hover:before {
+      display: flex;
+    }
+    /* Создаем оранжевую линию слева */
+    .link:before {
+      content: "";
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 5px;
+      height: 100%;
+      background-color: #ffa000;
+    }
+    /* Позиционирование админ-меню */
+    .menu__admin {
+      margin-top: auto;
+      padding-bottom: 40px;
+    }
+  </style>
+  <body>
+  <section class="menu">
+    <!-- Логотип -->
+    <a href="#" class="menu__logo logo">Drivefile</a>
+    <!-- Основное меню -->
+    <ul class="menu__list list">
+      <!-- Элемент меню -->
+      <li class="menu__item item">
+        <!-- Ссылка меню -->
+        <a href="#" class="menu__link link">
+          <img src="./img/home.svg" alt="Home" />
+          <span>Home</span>
+        </a>
+      </li>
+      <li class="menu__item item">
+        <a href="#" class="menu__link link">
+          <img src="./img/recents.svg" alt="Recents" />
+          <span>Recents</span>
+        </a>
+      </li>
+      <li class="menu__item item">
+        <a href="#" class="menu__link link">
+          <img src="./img/starred.svg" alt="Starred" />
+          <span>Starred</span>
+        </a>
+      </li>
+      <li class="menu__item item">
+        <a href="#" class="menu__link link">
+          <img src="./img/photos.svg" alt="Photos" />
+          <span>Photos</span>
+        </a>
+      </li>
+      <li class="menu__item item">
+        <a href="#" class="menu__link link">
+          <img src="./img/shared.svg" alt="Shared" />
+          <span>Shared</span>
+        </a>
+      </li>
+      <li class="menu__item item">
+        <a href="#" class="menu__link link">
+          <img src="./img/file.svg" alt="File" />
+          <span>File</span>
+        </a>
+      </li>
+      <li class="menu__item item">
+        <a href="#" class="menu__link link">
+          <img src="./img/delete.svg" alt="Delete" />
+          <span>Delete</span>
+        </a>
+      </li>
+    </ul>
+    <ul class="menu__admin admin">
+      <li class="admin__item item">
+        <a href="" class="admin__link link">
+          <img src="./img/get.svg" alt="Get help" />
+          <span>Get help</span>
+        </a>
+      </li>
+      <li class="admin__item item">
+        <a href="" class="admin__link link">
+          <img src="./img/logout.svg" alt="Logout" />
+          <span>Logout</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+  <section class="content">
+    <div th:replace="~{layoutFragments/main :: main}"></div>
+    <!-- Заполнить любым текстом -->
+  </section>
+  </body>
+  </html>

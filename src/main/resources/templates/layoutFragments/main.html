@@ -1,0 +1,280 @@
+<div xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+     th:fragment="main" data-bs-theme="dark">
+
+
+    <div sec:authorize="isAuthenticated() && hasRole('USER')">
+        <!--ПРОЕКТЫ-->
+        <div sec:authorize="isAuthenticated() ">
+            <h5><a style="vertical-align: middle; font-size: 15pt" th:href="@{/tasks/big/view-all/open}"
+                   class="btn btn-outline">Проекты</a>
+                <a style="vertical-align: middle; font-size: 15pt">/</a>
+                <a style="vertical-align: middle; font-size: 15pt" th:href="@{/tasks/big/view-all/closed}"
+                   class="btn btn-outline">Закрытые</a>
+                <a style="vertical-align: middle; font-size: 15pt">/</a>
+                <!-- КНОПКА-ТРИГЕР МОДАЛЬНОГО ОКНА -->
+                <a style="vertical-align: middle; font-size: 15pt" class="btn btn-outline"
+                   data-bs-toggle="modal" data-bs-target="#exampleModal1">Добавить проект</a>
+            </h5>
+            <!-- Модальное окно -->
+            <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel1">Новый проект</h1>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST" th:action="@{/tasks/add/other}"
+                                  th:object="${bigTaskForm}">
+                                <div class="mb-3">
+                                    <label for="taskTitle1" class="form-label">Название</label>
+                                    <input name="taskTitle" type="text" class="form-control"
+                                           id="taskTitle1">
+                                </div>
+                                <div class="form-floating">
+                                    <input name="fixPeriod" type="date" class="form-control" id="fixPeriod1"
+                                           placeholder="Введите дату завершения" required>
+                                    <label for="fixPeriod1">Дата завершения</label>
+                                </div>
+
+                                <div class="mb-3" hidden>
+                                    <label for="pattern1"></label>
+                                    <input class="form-select" name="pattern" id="pattern1"
+                                           th:each="pattern : ${T(com.sber.finalsberproject.model.Pattern)}"
+                                           th:value="${'BIG_TASKS'}">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                        Закрыть
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--        АККОРДЕОН-->
+            <div style="overflow: auto; max-height: 200px; padding-inline-end: 20px">
+                <div class="accordion" id="accordionPanelsStayOpenExample1" sec:authorize="isAuthenticated()"
+                     style="--bs-accordion-btn-padding-x: 0.5rem;
+                 --bs-accordion-body-padding-x:0.5rem;
+                 --bs-accordion-btn-padding-y: 0.25rem;
+                 --bs-accordion-body-padding-y:0.25rem;
+                 --bs-accordion-active-bg: rgb(48,52,56);
+                 --bs-accordion-btn-icon-width:15px;
+                 --bs-accordion-active-color:#aca6ae">
+                    <div class="accordion-item" th:each="bigTask : ${bigTasks}">
+                        <h2 class="accordion-header" id="heading1" th:id="${'heading1'+bigTask.getId()}"
+                            th:if="${!bigTask.isCompleted()}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#panelsStayOpen-collapseOne1"
+                                    th:data-bs-target="${'#panelsStayOpen-collapseOne1'+bigTask.getId()}"
+                                    aria-expanded="false"
+                                    aria-controls="panelsStayOpen-collapseOne"
+                                    th:aria-controls="${'collapseOne'+bigTask.getId()}">
+                    <span style="float: left; width: 100%">
+                        <a style="float: left; width: 60%" th:text="'Название задачи: ' + ${bigTask.getTaskTitle()}">Текст 1</a>
+                        <a style="float: left; width: 40%; text-align: right; padding-right: 20px"
+                           th:each="user : ${usersCompany}"
+                           th:text="'Ответственный: ' + ${user.getLogin()}"
+                           th:if="${bigTask.getResponsible() != null && user.getId() == bigTask.getResponsible() }">Текст 3 </a>
+                    </span>
+                                <span style="clear: both; width: 130px" th:text="${'до: '+ bigTask.getFixPeriod()}"></span>
+                            </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseOne1" th:id="${'panelsStayOpen-collapseOne1'+bigTask.getId()}"
+                             class="accordion-collapse collapse show-off">
+                            <div class="accordion-body" id="body1" th:id="${'body1'+bigTask.getId()}">
+                                <a class="text-link text-blue" th:href="'/tasks/big/' + ${bigTask.getId()}"
+                                   th:text="${bigTask.getTaskTitle()}"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!--ЗАДАЧИ-->
+            <div sec:authorize="isAuthenticated() ">
+                <div class="col">
+                    <h5><a style="vertical-align: middle; font-size: 15pt" th:href="@{/tasks/medium/view-all/open}"
+                           class="btn btn-outline">Задачи</a>
+                        <a style="vertical-align: middle; font-size: 15pt">/</a>
+                        <a style="vertical-align: middle; font-size: 15pt" th:href="@{/tasks/medium/view-all/closed}"
+                           class="btn btn-outline">Закрытые</a>
+                        <a style="vertical-align: middle; font-size: 15pt">/</a>
+                        <!-- КНОПКА-ТРИГЕР МОДАЛЬНОГО ОКНА -->
+                        <a style="vertical-align: middle; font-size: 15pt" class="btn btn-outline"
+                           data-bs-toggle="modal"
+                           data-bs-target="#exampleModal2">Добавить задача</a>
+                    </h5>
+                </div>
+                <!--МОДАЛЬНОЕ ОКНО-->
+                <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel2">Новая задача</h1>
+                            </div>
+                            <div class="modal-body">
+                                <form style="max-width: 25vw" method="POST" th:action="@{/tasks/add/other}"
+                                      th:object="${mediumTaskForm}">
+                                    <div class="mb-3">
+                                        <label for="taskTitle2" class="form-label">Название</label>
+                                        <input name="taskTitle" type="text" class="form-control"
+                                               id="taskTitle2">
+                                    </div>
+                                    <div class="mb-3" hidden>
+                                        <label for="pattern2"></label>
+                                        <input class="form-select" name="pattern" id="pattern2"
+                                               th:each="pattern : ${T(com.sber.finalsberproject.model.Pattern)}"
+                                               th:value="${'MEDIUM_TASKS'}">
+                                    </div>
+                                    <div class="form-floating">
+                                        <input name="fixPeriod" type="date" class="form-control" id="fixPeriod2"
+                                               placeholder="Введите дату завершения" required>
+                                        <label for="fixPeriod2">Дата завершения</label>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            Закрыть
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--        АККОРДЕОН-->
+                <div style="overflow: auto; max-height: 200px; padding-inline-end: 20px">
+                    <div class="accordion" id="accordionPanelsStayOpenExample2" sec:authorize="isAuthenticated()"
+                         style="--bs-accordion-btn-padding-x: 0.5rem;
+                 --bs-accordion-body-padding-x:0.5rem;
+                 --bs-accordion-btn-padding-y: 0.25rem;
+                 --bs-accordion-body-padding-y:0.25rem;
+                 --bs-accordion-active-bg: rgb(48,52,56);
+                 --bs-accordion-btn-icon-width:15px;
+                 --bs-accordion-active-color:#aca6ae">
+                        <div class="accordion-item" th:each="mediumtask : ${mediumTasks}">
+                            <h2 class="accordion-header" id="heading2" th:id="${'heading1'+mediumtask.getId()}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#panelsStayOpen-collapseOne1"
+                                        th:data-bs-target="${'#panelsStayOpen-collapseOne1'+mediumtask.getId()}"
+                                        aria-expanded="false"
+                                        aria-controls="panelsStayOpen-collapseOne"
+                                        th:aria-controls="${'collapseOne'+mediumtask.getId()}">
+                    <span style="float: left; width: 100%">
+                        <a style="float: left; width: 60%" th:text="'Название задачи: ' + ${mediumtask.getTaskTitle()}">Текст 1</a>
+                        <a style="float: left; width: 40%; text-align: right; padding-right: 20px"
+                           th:each="user : ${usersCompany}"
+                           th:text="'Ответственный: ' + ${user.getLogin()}"
+                           th:if="${mediumtask.getResponsible() != null && user.getId() == mediumtask.getResponsible() }">Текст 3 </a>
+                    </span>
+                                    <span style="clear: both; width: 130px" th:text="${'до: ' + mediumtask.getFixPeriod()}"></span>
+                                </button>
+                            </h2>
+                            <div id="panelsStayOpen-collapseOne2"
+                                 th:id="${'panelsStayOpen-collapseOne1'+mediumtask.getId()}"
+                                 class="accordion-collapse collapse show-off">
+                                <div class="accordion-body" id="body2" th:id="${'body2'+mediumtask.getId()}">
+                                    <a class="text-link text-blue" th:href="'/tasks/medium/' + ${mediumtask.getId()}"
+                                       th:text="${mediumtask.getTaskTitle()}"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--ЗАМЕТКИ-->
+                <div sec:authorize="isAuthenticated() && hasRole('USER')">
+                    <div class="col">
+                        <h5><a style="vertical-align: middle; font-size: 15pt" th:href="@{/tasks/small/view-all/open}"
+                               class="btn btn-outline">Заметки</a>
+                            <a style="vertical-align: middle; font-size: 15pt">/</a>
+                            <a style="vertical-align: middle; font-size: 15pt" th:href="@{/tasks/small/view-all/closed}"
+                               class="btn btn-outline">Закрытые</a>
+                            <a style="vertical-align: middle; font-size: 15pt">/</a>
+                            <!-- КНОПКА-ТРИГЕР МОДАЛЬНОГО ОКНА -->
+                            <a style="vertical-align: middle; font-size: 15pt" class="btn btn-outline"
+                               data-bs-toggle="modal"
+                               data-bs-target="#exampleModal3">Добавить заметку</a>
+                        </h5>
+                    </div>
+                    <!--МОДАЛЬНОЕ ОКНО-->
+                    <div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel3">Новая заметка</h1>
+                                </div>
+                                <div class="modal-body">
+                                    <form style="max-width: 25vw" method="POST" th:action="@{/tasks/add/other}"
+                                          th:object="${taskForm}">
+                                        <div class="mb-3">
+                                            <label for="taskTitle3" class="form-label">Название</label>
+                                            <input name="taskTitle" type="text" class="form-control"
+                                                   id="taskTitle3">
+                                        </div>
+                                        <div class="form-floating">
+                                            <input name="fixPeriod" type="date" class="form-control" id="fixPeriod3"
+                                                   placeholder="Введите дату завершения" required>
+                                            <label for="fixPeriod3">Дата завершения</label>
+                                        </div>
+                                        <div class="mb-3" hidden>
+                                            <label for="pattern3"></label>
+                                            <input class="form-select" name="pattern" id="pattern3"
+                                                   th:each="pattern : ${T(com.sber.finalsberproject.model.Pattern)}"
+                                                   th:value="${'SMALL_TASKS'}">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                Закрыть
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--        ТАБЛИЦА ЗАМЕТОК-->
+                    <div style="overflow: auto; height: 800px; padding-inline-end: 20px">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col" hidden="">ID</th>
+                                <th scope="col" hidden="">Текст</th>
+                                <th scope="col" hidden="">Дата создания</th>
+                                <th scope="col" hidden="">Дата завершения</th>
+                                <th scope="col" hidden="">Статус</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="task : ${smallTasks}" >
+                                <td th:text="${task.getId()}"></td>
+                                <td th:text="${task.getTaskTitle()}"></td>
+                                <td class="date text-weight-50" th:text="${'от: '+ task.getCreatedWhen()}"></td>
+                                <td style="clear: both; width: 130px" th:text="${'до: ' + task.getFixPeriod()}"></td>
+                                <td style="width: 110px">
+                                    <div>
+                                        <a th:if="${!task.isCompleted()}" class="btn btn-sm btn-outline-success"
+                                           th:href="'/tasks/closed/other/' + ${task.getId()}"
+                                           onclick="return confirm('Вы действительно хотите закрыть проект?');">Завершить</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

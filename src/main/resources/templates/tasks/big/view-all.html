@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Проекты</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <!--ПРОЕКТЫ-->
+    <div sec:authorize="isAuthenticated() ">
+        <h5><a style="vertical-align: middle; font-size: 15pt" th:href="@{/tasks/big/view-all/open}" class="btn btn-outline">Проекты</a>
+            <a style="vertical-align: middle; font-size: 15pt">/</a>
+            <a style="vertical-align: middle; font-size: 15pt" th:href="@{/tasks/big/view-all/closed}"
+               class="btn btn-outline">Закрытые</a>
+            <a style="vertical-align: middle; font-size: 15pt">/</a>
+            <!-- КНОПКА-ТРИГЕР МОДАЛЬНОГО ОКНА -->
+            <a style="vertical-align: middle; font-size: 15pt"  class="btn btn-outline"
+               data-bs-toggle="modal" data-bs-target="#exampleModal1">Добавить проект</a>
+        </h5>
+        <!--МОДАЛЬНОЕ ОКНО-->
+        <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel1">Новый проект</h1>
+                    </div>
+                    <div class="modal-body">
+                        <form style="max-width: 25vw" method="POST" th:action="@{/tasks/add/big}"
+                              th:object="${bigTaskForm}">
+                            <div class="mb-3">
+                                <label for="taskTitle1" class="form-label">Название</label>
+                                <input name="taskTitle" type="text" class="form-control"
+                                       id="taskTitle1">
+
+                            </div>
+                            <div class="form-floating">
+                                <input name="fixPeriod" type="date" class="form-control" id="fixPeriod"
+                                       placeholder="Введите дату завершения" required>
+                                <label for="fixPeriod">Дата завершения</label>
+                            </div>
+                            <div class="mb-3" hidden>
+                                <label for="pattern"></label>
+                                <input class="form-select" hidden name="pattern" id="pattern"
+                                       th:each="pattern : ${T(com.sber.finalsberproject.model.Pattern)}"
+                                       th:value="${'BIG_TASKS'}">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Закрыть
+                                </button>
+                                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion" id="accordionPanelsStayOpenExample1" sec:authorize="isAuthenticated()"
+         style="--bs-accordion-btn-padding-x: 0.5rem;
+                 --bs-accordion-body-padding-x:0.5rem;
+                 --bs-accordion-btn-padding-y: 0.25rem;
+                 --bs-accordion-body-padding-y:0.25rem;
+                 --bs-accordion-active-bg: rgb(48,52,56);
+                 --bs-accordion-btn-icon-width:15px;
+                 --bs-accordion-active-color:#aca6ae">
+        <div class="accordion-item" th:each="bigTask : ${bigTasks}">
+            <h2 class="accordion-header" id="heading1" th:id="${'heading1'+bigTask.getId()}" th:if="${!bigTask.isCompleted()}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#panelsStayOpen-collapseOne1"
+                        th:data-bs-target="${'#panelsStayOpen-collapseOne1'+bigTask.getId()}"
+                        aria-expanded="false"
+                        aria-controls="panelsStayOpen-collapseOne"
+                        th:aria-controls="${'collapseOne'+bigTask.getId()}">
+                    <span style="float: left; width: 100%">
+                        <a style="float: left; width: 60%" th:text="'Название задачи: ' + ${bigTask.getTaskTitle()}">Текст 1</a>
+                        <a style="float: left; width: 40%; text-align: right; padding-right: 20px" th:each="user : ${usersCompany}"
+                           th:text="'Ответственный: ' + ${user.getLogin()}" th:if="${bigTask.getResponsible() != null && user.getId() == bigTask.getResponsible() }">Текст 3 </a>
+                    </span >
+                    <span style="clear: both; width: 130px" th:text="${'до: '+bigTask.getFixPeriod()}"></span>
+                </button>
+            </h2>
+            <div id="panelsStayOpen-collapseOne1" th:id="${'panelsStayOpen-collapseOne1'+bigTask.getId()}"
+                 class="accordion-collapse collapse show-off">
+                <div class="accordion-body" id="body1" th:id="${'body1'+bigTask.getId()}">
+                    <a class="text-link text-blue" th:href="'/tasks/big/' + ${bigTask.getId()}"
+                       th:text="${bigTask.getTaskTitle()}" ></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--            PADDING-->
+    <div>
+        <nav aria-label="Pagination" th:if="${bigTasks.totalPages gt 0}">
+            <ul class="pagination justify-content-center font-weight-bold"
+                style="--bs-pagination-active-border-color: #484f56; --bs-pagination-active-bg:#343a3f;
+                --bs-link-color:#49c7c7; --bs-pagination-active-color: #acb4bc">
+                <li class="page-item" th:classappend="${bigTasks.number eq 0} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/tasks/big/view-all?page={id}(id=${bigTasks.number lt 2 ? 1 : bigTasks.number})}"
+                       aria-label="Previous" title="Previous Page" data-toggle="tooltip">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item" th:classappend="${i eq bigTasks.number + 1} ? 'active'"
+                    th:each="i : ${#numbers.sequence( 1, bigTasks.totalPages, 1)}">
+                    <a class="page-link" th:href="@{/tasks/big/view-all?page={id}(id=${i})}" th:text="${i}"
+                       th:title="${'Page '+ i}" data-toggle="tooltip"></a>
+                </li>
+                <li class="page-item" th:classappend="${bigTasks.number eq bigTasks.totalPages - 1} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/tasks/big/view-all?page={id}(id=${bigTasks.number + 2})}"
+                       aria-label="Next" title="Next Page" data-toggle="tooltip">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+</body>
+</html>

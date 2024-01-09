@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Завершенные заметки</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <!--ЗАМЕТКИ-->
+    <div sec:authorize="isAuthenticated() ">
+        <div class="col">
+            <h5><a style="vertical-align: middle; font-size: 15pt" th:href="@{/tasks/small/view-all/open}"
+                   class="btn btn-outline">Заметки</a>
+                <a style="vertical-align: middle; font-size: 15pt">/</a>
+                <a style="vertical-align: middle; font-size: 15pt" th:href="@{/tasks/small/view-all/closed}"
+                   class="btn btn-outline">Закрытые</a>
+                <a style="vertical-align: middle; font-size: 15pt">/</a>
+            </h5>
+        </div>
+        <!--        ТАБЛИЦА ЗАМЕТОК-->
+        <div style="overflow: auto; height: max-content; padding-inline-end: 20px">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col" hidden="">ID</th>
+                    <th scope="col" hidden="">Текст</th>
+                    <th scope="col" hidden="">Дата создания</th>
+                    <th scope="col" hidden="">Статус</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="task : ${smallTasks}" th:if="${task.isCompleted()}">
+                    <td th:text="${task.getId()}"></td>
+                    <td th:text="${task.getTaskTitle()}"></td>
+                    <td th:text=" ${'от ' + task.getCreatedWhen()}"></td>
+                    <td style="width: 110px">
+                        <div>
+                            <a th:if="${!task.isCompleted()}" class="btn btn-sm btn-outline-success"
+                               th:href="'/tasks/closed/small/' + ${task.getId()}"
+                               onclick="return confirm('Вы действительно хотите закрыть проект?');">Завершить</a>
+                            <a th:if="${task.isCompleted()}" class="btn btn-sm btn-outline-warning" onclick="window.history.back()"
+                               th:href="'/tasks/disclosure/small/' + ${task.getId()}">Возобновить</a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Завершенные проекты</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <!--ПРОЕКТЫ-->
+    <div sec:authorize="isAuthenticated() ">
+        <h5><a style="vertical-align: middle; font-size: 15pt" th:href="@{/tasks/big/view-all/open}" class="btn btn-outline">Проекты</a>
+            <a style="vertical-align: middle; font-size: 15pt">/</a>
+            <a style="vertical-align: middle; font-size: 15pt" th:href="@{/tasks/big/view-all/closed}"
+               class="btn btn-outline">Закрытые</a>
+        </h5>
+    </div>
+    <div class="accordion" id="accordionPanelsStayOpenExample1" sec:authorize="isAuthenticated()"
+         style="--bs-accordion-btn-padding-x: 0.5rem;
+                 --bs-accordion-body-padding-x:0.5rem;
+                 --bs-accordion-btn-padding-y: 0.25rem;
+                 --bs-accordion-body-padding-y:0.25rem;
+                 --bs-accordion-active-bg: rgb(48,52,56);
+                 --bs-accordion-btn-icon-width:15px;
+                 --bs-accordion-active-color:#aca6ae">
+        <div class="accordion-item" th:each="task : ${bigTasks}">
+            <h2 class="accordion-header" id="heading1" th:id="${'heading1'+task.getId()}" th:if="${task.isCompleted()}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#panelsStayOpen-collapseOne1"
+                        th:data-bs-target="${'#panelsStayOpen-collapseOne1'+task.getId()}"
+                        aria-expanded="false"
+                        aria-controls="panelsStayOpen-collapseOne"
+                        th:aria-controls="${'collapseOne'+task.getId()}">
+                    <span style="float: left; width: 100%">
+                        <a style="float: left; width: 60%" th:text="'Название задачи: ' + ${task.getTaskTitle()}">Текст 1</a>
+                    </span>
+                    <span style="clear: both" th:text="${task.getFixPeriod()}"></span>
+                </button>
+            </h2>
+            <div id="panelsStayOpen-collapseOne1" th:id="${'panelsStayOpen-collapseOne1'+task.getId()}"
+                 class="accordion-collapse collapse show-off">
+                <div class="accordion-body" id="body1" th:id="${'body1'+task.getId()}">
+                    <a class="text-link text-blue" th:href="'/tasks/big/' + ${task.getId()}"
+                       th:text="${task.getTaskTitle()}"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--            PADDING-->
+    <div>
+        <nav aria-label="Pagination" th:if="${bigTasks.totalPages gt 0}">
+            <ul class="pagination justify-content-center font-weight-bold"
+                style="--bs-pagination-active-border-color: #484f56; --bs-pagination-active-bg:#343a3f;
+                --bs-link-color:#49c7c7; --bs-pagination-active-color: #acb4bc">
+                <li class="page-item" th:classappend="${bigTasks.number eq 0} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/tasks/big/view-all?page={id}(id=${bigTasks.number lt 2 ? 1 : bigTasks.number})}"
+                       aria-label="Previous" title="Previous Page" data-toggle="tooltip">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item" th:classappend="${i eq bigTasks.number + 1} ? 'active'"
+                    th:each="i : ${#numbers.sequence( 1, bigTasks.totalPages, 1)}">
+                    <a class="page-link" th:href="@{/tasks/big/view-all?page={id}(id=${i})}" th:text="${i}"
+                       th:title="${'Page '+ i}" data-toggle="tooltip"></a>
+                </li>
+                <li class="page-item" th:classappend="${bigTasks.number eq bigTasks.totalPages - 1} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/tasks/big/view-all?page={id}(id=${bigTasks.number + 2})}"
+                       aria-label="Next" title="Next Page" data-toggle="tooltip">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+</body>
+</html>

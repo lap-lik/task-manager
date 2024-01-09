@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>Добавить задачу</title>
+</head>
+<body>
+<div layout:fragment="content">
+  <h3 class="mt-3 mb-3">Добавить задачу</h3>
+  <form style="max-width: 50vw" method="POST" th:action="@{/medium/add}" th:object="${taskForm}">
+    <div class="mb-3" hidden>
+      <label for="pattern"></label>
+      <input class="form-select" name="pattern" id="pattern"
+             th:each="pattern : ${T(com.sber.finalsberproject.model.Pattern)}"
+             th:value="${'MEDIUM_TASKS'}">
+    </div>
+    <div class="mb-3">
+      <label for="taskTitle" class="form-label">Название</label>
+      <input name="taskTitle" type="text" class="form-control" id="taskTitle">
+    </div>
+
+
+
+
+    <button type="submit" class="btn btn-primary">Добавить</button>
+    <button type="button" class="btn btn-secondary" onclick="window.history.back()">Назад</button>
+  </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout}"
+      lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>Просмотр задачи</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="col">
+        <h4 >
+            <a th:text="'Задача: ' + ${task.getTaskTitle()}"></a>
+        </h4>
+        <h6 >
+            <a th:if="${!task.isCompleted()}" class="btn btn-sm btn-outline-danger"
+               th:href="'/tasks/closed/medium/' + ${task.getId()}"
+               onclick="return confirm('Вы действительно хотите закрыть проект?');">Закрыть</a>
+            <a th:if="${task.isCompleted()}" class="btn btn-sm btn-outline-warning"
+               th:href="'/tasks/disclosure/medium/' + ${task.getId()}">Переоткрыть</a>
+            <a style="width: 110px" class="btn btn-sm btn-outline-success"
+               th:href="'/tasks/update/' + ${task.getId()}">Редактировать</a>
+        </h6>
+    </div>
+    <!--ЗАДАЧИ-->
+    <div sec:authorize="isAuthenticated() ">
+        <h5><a style="vertical-align: middle; font-size: 15pt" th:href="'/tasks/medium/'+${task.getId()}"
+               class="btn btn-outline">Заметки</a>
+            <a style="vertical-align: middle; font-size: 15pt">/</a>
+            <a style="vertical-align: middle; font-size: 15pt" th:href="'/tasks/small-at-medium/' +${task.getId()}"
+               class="btn btn-outline">Закрытые</a>
+            <a style="vertical-align: middle; font-size: 15pt">/</a>
+
+
+        </h5>
+        <!--        ТАБЛИЦА ЗАМЕТОК-->
+        <div style="overflow: auto; height: max-content; padding-inline-end: 20px">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col" hidden="">ID</th>
+                    <th scope="col" hidden="">Текст</th>
+                    <th scope="col" hidden="">Дата создания</th>
+                    <th scope="col" hidden="">Дата завершения</th>
+                    <th scope="col" hidden="">Статус</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="smallTask : ${taskByTasks}" th:if="${smallTask.isCompleted()}">
+                    <td th:text="${smallTask.getId()}"></td>
+                    <td th:text="${smallTask.getTaskTitle()}"></td>
+                    <td th:text="${'от ' + smallTask.getCreatedWhen()}"></td>
+                    <td style="clear: both" th:text="${task.getFixPeriod()}"></td>
+                    <td style="width: 110px">
+                        <div>
+                            <a th:if="${!smallTask.isCompleted()}" class="btn btn-sm btn-outline-success"
+                               th:href="'/tasks/closed/small/' + ${smallTask.getId()}"
+                               onclick="return confirm('Вы действительно хотите закрыть заметку?');">Завершить</a>
+                            <a th:if="${smallTask.isCompleted()}" class="btn btn-sm btn-outline-warning"
+                               th:href="'/tasks/disclosure/small/' + ${smallTask.getId()}">Возобновить</a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+

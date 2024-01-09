@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout}"
+      lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>Комментарии</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div>
+        <table class="table table-hover mt-3">
+            <thead>
+            <tr>
+                <th scope="col">Пользователь</th>
+                <th scope="col">Текст</th>
+                <th scope="col">Дата создания</th>
+                <th scope="col">Ссылка на файл</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="comment : ${comments}">
+                <td th:text="${comment.getCreatedBy()}"></td>
+                <td th:text="${comment.getText()}"></td>
+                <td th:text="${comment.getCreatedWhen()}"></td>
+                <td>
+                    <a class="text-link text-blue" th:if="${comment.getOnlineCopyPath()} != null"
+                       th:text="${comment.getOnlineCopyPath().toString()}"
+                       th:href="@{|/comments/download?commentId=${comment.getId()}|}">
+                        <span>Скачать файл</span>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+

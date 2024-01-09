@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Задачи</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <!--ЗАДАЧИ-->
+    <div sec:authorize="isAuthenticated() ">
+        <h5><a style="vertical-align: middle; font-size: 15pt" th:href="@{/tasks/medium/view-all/open}"
+               class="btn btn-outline">Задачи</a>
+            <a style="vertical-align: middle; font-size: 15pt">/</a>
+            <a style="vertical-align: middle; font-size: 15pt" th:href="@{/tasks/medium/view-all/closed}"
+               class="btn btn-outline">Закрытые</a>
+            <a style="vertical-align: middle; font-size: 15pt">/</a>
+            <!-- КНОПКА-ТРИГЕР МОДАЛЬНОГО ОКНА -->
+            <a style="vertical-align: middle; font-size: 15pt" class="btn btn-outline" data-bs-toggle="modal"
+               data-bs-target="#exampleModal2">Добавить задача</a>
+        </h5>
+        <!--МОДАЛЬНОЕ ОКНО-->
+        <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel2">Новая задача</h1>
+                    </div>
+                    <div class="modal-body">
+                        <form style="max-width: 25vw" method="POST" th:action="@{/tasks/add/medium}"
+                              th:object="${taskForm}">
+                            <div class="mb-3">
+                                <label for="taskTitle2" class="form-label">Название</label>
+                                <input name="taskTitle" type="text" class="form-control"
+                                       id="taskTitle2">
+                                <div class="mb-3" hidden>
+                                    <label for="pattern"></label>
+                                    <input class="form-select" name="pattern" id="pattern"
+                                           th:each="pattern : ${T(com.sber.finalsberproject.model.Pattern)}"
+                                           th:value="${'MEDIUM_TASKS'}">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Закрыть
+                                </button>
+                                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="accordion" id="accordionPanelsStayOpenExample2" sec:authorize="isAuthenticated()"
+             style="--bs-accordion-btn-padding-x: 0.5rem;
+             --bs-accordion-body-padding-x:0.5rem;
+             --bs-accordion-btn-padding-y: 0.25rem;
+             --bs-accordion-body-padding-y:0.25rem;
+             --bs-accordion-active-bg: rgb(48,52,56);
+             --bs-accordion-btn-icon-width:15px;
+             --bs-accordion-active-color:#aca6ae">
+            <div class="accordion-item" th:each="task : ${mediumTasks}" th:if="${!task.isCompleted()}">
+                <h2 class="accordion-header" id="heading2" th:id="${'heading2'+task.getId()}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#panelsStayOpen-collapseOne2"
+                            th:data-bs-target="${'#panelsStayOpen-collapseOne2'+task.getId()}"
+                            aria-expanded="false"
+                            aria-controls="panelsStayOpen-collapseOne"
+                            th:aria-controls="${'collapseOne'+task.getId()}">
+                    <span style="float: left; width: 100%">
+                        <a style="float: left; width: 60%" th:text="'Название задачи: ' + ${task.getTaskTitle()}">Текст 1</a>
+                        <a style="float: left; width: 40%; text-align: right; padding-right: 20px"
+                           th:each="user : ${usersCompany}"
+                           th:text="'Ответственный: ' + ${user.getLogin()}"
+                           th:if="${task.getResponsible() != null && user.getId() == task.getResponsible() }">Текст 3 </a>
+                    </span>
+                        <span style="clear: both; width: 130px" th:text="${'до: '+task.getFixPeriod()}"></span>
+                    </button>
+                </h2>
+                <div id="panelsStayOpen-collapseOne2" th:id="${'panelsStayOpen-collapseOne2'+task.getId()}"
+                     class="accordion-collapse collapse show-off">
+                    <div class="accordion-body" id="body2" th:id="${'body2'+task.getId()}">
+                        <a class="text-link text-blue" th:href="'/tasks/medium/' + ${task.getId()}"
+                           th:text="${task.getTaskTitle()}"></a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!--            PADDING-->
+    <div>
+        <nav aria-label="Pagination" th:if="${mediumTasks.totalPages gt 0}">
+            <ul class="pagination justify-content-center font-weight-bold"
+                style="--bs-pagination-active-border-color: #484f56; --bs-pagination-active-bg:#343a3f;
+                --bs-link-color:#49c7c7; --bs-pagination-active-color: #acb4bc">
+                <li class="page-item" th:classappend="${mediumTasks.number eq 0} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/tasks/medium/view-all?page={id}(id=${mediumTasks.number lt 2 ? 1 : mediumTasks.number})}"
+                       aria-label="Previous" title="Previous Page" data-toggle="tooltip">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item" th:classappend="${i eq mediumTasks.number + 1} ? 'active'"
+                    th:each="i : ${#numbers.sequence( 1, mediumTasks.totalPages, 1)}">
+                    <a class="page-link" th:href="@{/tasks/medium/view-all?page={id}(id=${i})}" th:text="${i}"
+                       th:title="${'Page '+ i}" data-toggle="tooltip"></a>
+                </li>
+                <li class="page-item" th:classappend="${mediumTasks.number eq mediumTasks.totalPages - 1} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/tasks/medium/view-all?page={id}(id=${mediumTasks.number + 2})}"
+                       aria-label="Next" title="Next Page" data-toggle="tooltip">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+    <title>Онлайн библиотека</title>
+<!--    <link rel="stylesheet" media="screen" href="/css/nav.css">-->
+<!--    <link href="/img" type="image/jpeg">-->
+    <link href="/webjars/bootstrap/5.3.0/css/bootstrap.css" rel="stylesheet" />
+    <script src="/webjars/bootstrap/5.3.0/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/js/form_validation.js"></script>
+</head>
+<body>
+<div th:replace="~{layoutFragments/header :: header}"></div>
+<main class="content-wrapper">
+    <div class="container" style="  padding: 20px;">
+        <div layout:fragment="content">
+            <div th:replace="~{layoutFragments/main :: main}"></div>
+        </div>
+    </div>
+        <!--        <footer th:insert="~{layoutFragments/footer :: footer}" class="footer"></footer>-->
+</main>
+</body>
+</html>

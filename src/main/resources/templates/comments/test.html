@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<table class="table table-hover mt-3">
+  <thead>
+  <tr>
+    <th scope="col">Пользователь</th>
+    <th scope="col">Текст</th>
+    <th scope="col">Дата создания</th>
+    <th scope="col"></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="comment : ${comments}">
+    <td th:text="${comment.getCreatedBy()}"></td>
+    <td th:text="${comment.getText()}"></td>
+    <td th:text="${comment.getCreatedWhen()}"></td>
+  </tr>
+  </tbody>
+</table>
+
+
+
+
+<!--<div>-->
+<!--    <div sec:authorize="isAuthenticated() ">-->
+<!--        <h5><a style="vertical-align: middle">Комментарии:</a>-->
+<!--            &lt;!&ndash; Кнопка-триггер модального окна &ndash;&gt;-->
+<!--            <span type="button" class="bi bi-plus" data-bs-toggle="modal" data-bs-target="#exampleModal1"-->
+<!--                  style="vertical-align: -5px; font-size: 20pt; -webkit-text-stroke-width: 0.2pt; color: #acb4bc">+</span>-->
+<!--        </h5>-->
+<!--        &lt;!&ndash; Модальное окно &ndash;&gt;-->
+<!--        <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel"-->
+<!--             aria-hidden="true">-->
+<!--            <div class="modal-dialog modal-dialog-centered modal-lg">-->
+<!--                <div class="modal-content">-->
+<!--                    <div class="modal-header">-->
+<!--                        <h1 class="modal-title fs-5" id="exampleModalLabel1">Новый проект</h1>-->
+<!--                    </div>-->
+<!--                    <div class="modal-body">-->
+<!--                        <form method="POST" th:action="@{/comments/add}"-->
+<!--                              th:object="${commentForm}">-->
+<!--                            <div class="mb-3">-->
+<!--                                <label for="text" class="form-label">Текст</label>-->
+<!--                                <input name="text" type="text" class="form-control"-->
+<!--                                       id="text">-->
+<!--                            </div>-->
+<!--                            <div class="mt-3 form-floating">-->
+<!--                                <input name="onlineCopyPath" type="file" class="form-control form-control-sm" id="onlineCopyPath"-->
+<!--                                       placeholder="Онлайн копия файла" style="padding-top: 2rem;">-->
+<!--                                <label for="onlineCopyPath">Онлайн копия</label>-->
+<!--                            </div>-->
+<!--                            <input type="hidden" name="taskId" th:value="13L">-->
+<!--                            <div class="modal-footer">-->
+<!--                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">-->
+<!--                                    Закрыть-->
+<!--                                </button>-->
+<!--                                <button type="submit" class="btn btn-primary">Сохранить изменения</button>-->
+<!--                            </div>-->
+<!--                        </form>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+
+
+
+
+
+
+</body>
+</html>

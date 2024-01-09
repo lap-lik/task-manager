@@ -1,0 +1,67 @@
+<div xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+     th:fragment="header" data-bs-theme="dark">
+
+    <nav class="navbar navbar-expand-lg" style="--bs-dark: rgba(92,100,107,0.84)">
+        <div class="container-fluid">
+                    <span sec:authorize="isAuthenticated() && !hasRole('ADMIN')" class="nav-link">
+                        <a class="navbar-brand" href="/other" style="color: rgb(255,255,255)">Планировщик задач</a>
+                    </span>
+            <span sec:authorize="!isAuthenticated() || (isAuthenticated() && hasRole('ADMIN')) " class="nav-link">
+                        <a class="navbar-brand" href="/" style="color: rgb(255,255,255)">Планировщик задач</a>
+                    </span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li sec:authorize="isAuthenticated() && hasRole('USER')" class="nav-link">
+                        <a class="nav-link active" aria-current="page"
+                           th:href="'/tasks/'+${'big'}+'/view-all/open'">Проекты</a>
+                    </li>
+                    <li sec:authorize="isAuthenticated() && (hasRole('USER') && !hasRole('ADMIN'))" class="nav-link">
+                        <a class="nav-link active" aria-current="page" th:href="'/tasks/'+${'medium'}+'/view-all/open'">Задачи</a>
+                    </li>
+                    <li sec:authorize="isAuthenticated() && (hasRole('USER') && !hasRole('ADMIN'))" class="nav-link">
+                        <a class="nav-link active" aria-current="page" th:href="'/tasks/'+${'small'}+'/view-all/open'">Заметки</a>
+                    </li>
+                    <li sec:authorize="isAuthenticated() && hasRole('ADMINISTRATOR')" class="nav-link">
+                        <a class="nav-link active" aria-current="page" href="/company/my">Компания</a>
+                    </li>
+                    <li sec:authorize="isAuthenticated() && hasRole('ADMIN')" class="nav-link">
+                        <a class="nav-link active" aria-current="page" href="/company">Компании</a>
+                    </li>
+                    <li sec:authorize="isAuthenticated() && hasRole('ADMIN')" class="nav-link">
+                        <a class="nav-link active" aria-current="page" href="/users/view-all">Пользователи</a>
+                    </li>
+                </ul>
+                <!--                    <form class="d-flex" sec:authorize="isAuthenticated()">-->
+                <!--                        <span th:text="${#authentication.getPrincipal().getUsername()}"></span>-->
+                <!--                    </form>-->
+                <!--                    <div sec:authorize="isAuthenticated() && !hasRole('ADMIN')">-->
+                <!--                        <a class="nav-link active" style="float: right" th:href="'/users/profile/' + ${#authentication.getPrincipal().getUserId()}">Профиль</a>-->
+                <!--                    </div>-->
+                <form class="d-flex" sec:authorize="isAuthenticated() && !hasRole('ADMIN')">
+                    <a th:href="'/users/profile/' + ${#authentication.getPrincipal().getUserId()}"
+                       class="btn btn-outline-light btn-rounded" role="button">
+                        <span th:text="${#authentication.getPrincipal().getUsername()}"></span>
+                    </a>
+                </form>
+                <div><a>&emsp;</a></div>
+                <form class="nav-link" sec:authorize="isAuthenticated() && hasRole('ADMIN')">
+                    <span th:text="${#authentication.getPrincipal().getUsername()} + '&emsp;'"></span>
+                </form>
+
+                <form class="d-flex" sec:authorize="!isAuthenticated()">
+                    <a href="/login" class="btn btn-outline-light btn-rounded" role="button">Войти</a>
+                </form>
+                <form class="d-flex" sec:authorize="isAuthenticated()">
+                    <a href="/logout" class="btn btn-outline-light btn-rounded" role="button"
+                       aria-disabled="true">Выйти</a>
+                </form>
+            </div>
+        </div>
+    </nav>
+</div>

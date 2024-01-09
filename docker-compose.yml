@@ -1,0 +1,13 @@
+#docker-compose up
+version: "3.9"
+services:
+  postgres:
+    container_name: localPostgresSQLDBFinalProject
+    image: postgres
+    environment:
+      POSTGRES_DB: "final_db"
+      POSTGRES_USER: "anton"
+      POSTGRES_PASSWORD: "12345"
+    ports:
+      - "5432:5432"
+

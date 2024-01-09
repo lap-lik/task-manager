@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout}"
+      lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>Просмотр проекта</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="col">
+        <h4>
+            <a th:text="'Проект: ' + ${task.getTaskTitle()}"></a>
+        </h4>
+        <h6>
+            <a th:if="${!task.isCompleted()}" class="btn btn-sm btn-outline-danger"
+               th:href="'/tasks/closed/big/' + ${task.getId()}"
+               onclick="return confirm('Вы действительно хотите закрыть проект?');">Закрыть</a>
+            <a th:if="${task.isCompleted()}" class="btn btn-sm btn-outline-warning"
+               th:href="'/tasks/disclosure/big/' + ${task.getId()}">Переоткрыть</a>
+            <a style="width: 110px" class="btn btn-sm btn-outline-success"
+               th:href="'/tasks/update/' + ${task.getId()}">Редактировать</a>
+        </h6>
+    </div>
+    <!--ПРОЕКТЫ-->
+    <div sec:authorize="isAuthenticated() ">
+        <h5><a style="vertical-align: middle; font-size: 15pt" th:href="'/tasks/big/'+${task.getId()}"
+               class="btn btn-outline">Проект</a>
+            <a style="vertical-align: middle; font-size: 15pt">/</a>
+            <a style="vertical-align: middle; font-size: 15pt" th:href="'/tasks/medium/'+${task.getId()}+'/closed'"
+               class="btn btn-outline">Закрытые задачи</a>
+        </h5>
+        <!--        АККОРДЕОН-->
+        <div style="overflow: auto; max-height: 200px; padding-inline-end: 20px">
+            <div class="accordion" id="accordionPanelsStayOpenExample2" sec:authorize="isAuthenticated()"
+                 style="--bs-accordion-btn-padding-x: 0.5rem;
+             --bs-accordion-body-padding-x:0.5rem;
+             --bs-accordion-btn-padding-y: 0.25rem;
+             --bs-accordion-body-padding-y:0.25rem;
+             --bs-accordion-active-bg: rgb(48,52,56);
+             --bs-accordion-btn-icon-width:15px;
+             --bs-accordion-active-color:#aca6ae">
+                <div class="accordion-item" th:each="task : ${taskByTasks}" th:if="${task.isCompleted()}">
+                    <h2 class="accordion-header" id="heading2" th:id="${'heading2'+task.getId()}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#panelsStayOpen-collapseOne2"
+                                th:data-bs-target="${'#panelsStayOpen-collapseOne2'+task.getId()}"
+                                aria-expanded="false"
+                                aria-controls="panelsStayOpen-collapseOne"
+                                th:aria-controls="${'collapseOne'+task.getId()}">
+                            <span style="float: left; width: 100%">
+                                <a style="float: left; width: 60%" th:text="'Название задачи: ' + ${task.getTaskTitle()}">Текст 1</a>
+                                <a style="float: left; width: 40%; text-align: right; padding-right: 20px"
+                                   th:each="userByCompany : ${userDTO}"
+                                   th:text="'Ответственный: ' + ${userByCompany.getLogin()}"
+                                   th:if="${task.getResponsible() != null && userByCompany.getId() == task.getResponsible() }">Текст 3 </a>
+                            </span>
+                            <span style="clear: both" th:text="${task.getFixPeriod()}"></span>
+                        </button>
+                    </h2>
+                    <div id="panelsStayOpen-collapseOne2" th:id="${'panelsStayOpen-collapseOne2'+task.getId()}"
+                         class="accordion-collapse collapse show-off">
+                        <div class="accordion-body" id="body2" th:id="${'body2'+task.getId()}">
+                            <a class="text-link text-blue" th:href="'/tasks/medium/' + ${task.getId()}"
+                               th:text="${task.getTaskTitle()}"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+
